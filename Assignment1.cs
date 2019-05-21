@@ -11,10 +11,7 @@
 /// 
 using System;
 
-
-
 namespace Assignment1 {
-    
 
     public class ConsoleMVVApplication {
 
@@ -34,52 +31,6 @@ namespace Assignment1 {
         /// Also the user should be requestioned if the input was not accepted. To parse a string to int you can use the function: (static bool) int.TryParse(str, out i).
         /// 
         /// </summary>
-        /// 
-
-
-        public static int IntegerAbfragen(int Minimum, int Maximum)
-        {
-            ConsoleKeyInfo key;
-            string currentNumberText = "";
-            int pressedNumber = 1;
-            int possibleNumber = 1;
-            int Number = 1;
-
-            do
-            {
-                do
-                {
-                    key = Console.ReadKey(true);
-                    if (key.Key != ConsoleKey.Backspace)
-                    {
-                        bool validKey = Int32.TryParse(key.KeyChar.ToString(), out pressedNumber);
-                        if (validKey)
-                        {
-                            Int32.TryParse(Number.ToString() + key.KeyChar.ToString(), out possibleNumber);      
-
-                            if (!(currentNumberText.Length == 0 && pressedNumber == 0) && currentNumberText.Length < Maximum.ToString().Length && possibleNumber <= Maximum)       // inverse the bool
-                            {
-                                currentNumberText += key.KeyChar;        // Hänge das mit der Taste verbundene Zeichen an
-                                Console.Write(key.KeyChar);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        if (key.Key == ConsoleKey.Backspace && currentNumberText.Length > 0)
-                        {
-                            currentNumberText = currentNumberText.Substring(0, (currentNumberText.Length - 1));        // verkürze string
-                            Console.Write("\b \b");     // \b is a backslash
-                        }
-                    }
-                    Int32.TryParse(currentNumberText, out Number);
-                }
-                while (Number <= Minimum - 1);
-            }
-            while (key.Key != ConsoleKey.Enter);
-            return Number;
-        }
-        
         static void Main() {
             var PersonalPrice = 0.0;
 
@@ -92,100 +43,180 @@ namespace Assignment1 {
 
             //----------------------------------------------------
             // TODO: write your code here !
-            
-            ConsoleKeyInfo key;
-
-            int numberOfCustomers = 1;
-            
-            // ----------------------------- Traveling alone or in a group? ----------------------------- 
-
-            Console.WriteLine(String.Format("Are you traveling alone or in a group?\n -1: Alone\n -2: Group\n"));
-            do
+            int numberCustomers = 0;
+            int numberStudents = 0;
+            int numberPersons = 0;
+            bool inputPersons = false;
+            while (inputPersons == false)
             {
-                key = Console.ReadKey(true);
+                Console.WriteLine("Are you traveling alone or in a group?[alone/group]");
+                string group = Console.ReadLine();
+                if (group == "group" || group == "Group" || group == "GROUP")
+                {
+                    Console.WriteLine("How many people are there?");
+                    numberCustomers = int.Parse(Console.ReadLine());
+                    inputPersons = true;
+                }
+                else if (group == "alone" || group == "Alone" || group == "ALONE")
+                {
+                    numberCustomers = 1;
+                    inputPersons = true;
+                }
+                else
+                {
+                    Console.WriteLine("I cannot understand you. Please, try again...");
+                    inputPersons = false;
+                }
             }
-            while (key.KeyChar != '1' && key.KeyChar != '2');
+            Console.WriteLine("Travelling persons: {0}", numberCustomers);
+            Console.WriteLine("Please, input information about travellers.");
 
-            Console.WriteLine(key.KeyChar);
-
-            // ----------------------------- Number of people, if in a group ----------------------------- 
-
-            if (key.KeyChar == '2')
+            Person[] Customers = new Person[numberCustomers];
+            Student[] CustomersS = new Student[numberCustomers];
+            for (int i = 0; i < numberCustomers; i++)
             {
-                Console.WriteLine(String.Format("\nEnter the number of people (Minimum 2, Maximum 100).\n Varify your choice by pressing 'Enter'\n"));
-                numberOfCustomers = IntegerAbfragen(2, 100);
-                Console.WriteLine();
+                Console.WriteLine("Creating customer: {0}",i+1);
+
+                var newCustomerS = new Student();
+                var newCustomer = new Person();
+                bool ringLowTrue = false;
+                bool _ringLo = false;
+                while (ringLowTrue == false)
+                {
+                        Console.WriteLine("Ring of the original station?");
+                        string input = (Console.ReadLine());
+                        _ringLo = int.TryParse(input, out int digitTrue);
+                        while (_ringLo == false)
+                        {
+                            Console.WriteLine("This is not a number. Ring of the original station?");
+                            input = (Console.ReadLine());
+                            _ringLo = int.TryParse(input, out digitTrue);
+                        }
+                            newCustomer.lowerRing = digitTrue;
+
+                        if (newCustomer.lowerRing > 16 || newCustomer.lowerRing < 1)
+                        {
+                            Console.WriteLine("You wrote unexisted ring. Try again.");
+                            ringLowTrue = false;
+                        }
+                        else
+                        {
+                            ringLowTrue = true;
+                        }
+                    
+                }
+                bool ringHighTrue = false;
+                bool _ringHi = false;
+                int ring = 0;
+                while (ringHighTrue == false)
+                {
+                        
+                        Console.WriteLine("Ring of the destination?");
+                        string input = (Console.ReadLine());
+                        _ringHi = int.TryParse(input, out int digitTrue);
+                        while (_ringHi == false)
+                        {
+                            Console.WriteLine("This is not a number. Ring of the destination?");
+                            input = (Console.ReadLine());
+                            _ringHi = int.TryParse(input, out digitTrue);
+                        }
+                        ring = digitTrue;
+                                       
+                    if (ring > 16 || ring < 1)
+                    {
+                        ringHighTrue = false;
+                        Console.WriteLine("You wrote unexisted ring. Try again.");
+                    }
+                    else
+                    {
+                        ringHighTrue = true;
+                        if (ring < newCustomer.lowerRing)
+                        {
+                            newCustomer.upperRing = newCustomer.lowerRing;
+                            newCustomer.lowerRing = ring;
+                        }
+                        else 
+                        {
+                            newCustomer.upperRing = ring;
+                        }
+                    }
+                }
+                bool typeTikTrue = false;
+                bool ticketT = false;
+                while (typeTikTrue == false)
+                {
+                    Console.WriteLine("Which ticket type you want?(please type the number!)\n 0: SingleFare\n 1: WeeklyTicket\n 2: MonthlyTicket\n");
+                    string inputTT = Console.ReadLine();
+                    ticketT = int.TryParse(inputTT, out int _ticket);
+                    while (ticketT == false)
+                    {
+                        Console.WriteLine("You put wrong value.\n Which ticket type you want?(please type the number!)\n 0: SingleFare\n 1: WeeklyTicket\n 2: MonthlyTicket\n");
+                        inputTT = Console.ReadLine();
+                        ticketT = int.TryParse(inputTT, out _ticket);
+                    }
+                    newCustomer.ticketType = (TicketType)_ticket;
+                    if (newCustomer.ticketType == TicketType.SingleFare || newCustomer.ticketType == TicketType.WeeklyTicket || newCustomer.ticketType == TicketType.MonthlyTicket)
+                    {
+                        typeTikTrue = true;
+                    }
+                    else
+                    {
+                        Console.WriteLine("You wrote wrong number. \n Which ticket type you want?(please type the number!)\n 0: SingleFare\n 1: WeeklyTicket\n 2: MonthlyTicket\n");
+                        typeTikTrue = false;
+                    }
+                }
+
+                bool studTrue = false;
+                while (studTrue == false)
+                {
+                    Console.WriteLine("Are you a student? (yes/no)");
+                    string studAns = Console.ReadLine();
+                    if (studAns == "yes" || studAns == "YES" || studAns == "Yes")
+                    {
+                        newCustomerS.lowerRing = newCustomer.lowerRing;
+ 
+                        newCustomerS.upperRing = newCustomer.upperRing;
+
+                        newCustomerS.ticketType = newCustomer.ticketType;
+
+                        newCustomerS.isStudent = true;
+                        studTrue = true;
+                        CustomersS[numberStudents] = newCustomerS;
+                        numberStudents++;
+                    }
+                    else if (studAns == "no" || studAns == "NO" || studAns == "No")
+                    {
+                        newCustomer.isStudent = false;
+                        studTrue = true;
+                        Customers[numberPersons] = newCustomer;
+                        numberPersons++;
+                    }
+                    else
+                    {
+                        Console.WriteLine("I cannot understand you. Please, try again...");
+                        studTrue = false;
+                    }
+                }
             }
+            Console.WriteLine("All customers are created. Thank you.");
+            double PersonalPriceStu = 0;
+            double PersonalPriceCust = 0;
 
-            // ----------------------------- Collect the data for each traveler -----------------------------
-            
-            Person[] Customers = new Person[numberOfCustomers];
-
-
-            for (int i = 0; i <numberOfCustomers; i++)
+            if (numberStudents != 0)
             {
-                Console.WriteLine(String.Format("\nPerson " + (i+1).ToString()));
-
-                // Rings:
-                
-                Console.WriteLine(String.Format("\nEnter the number of the lower ring (Minimum 1, Maximum 13).\n Varify your choice by pressing 'Enter'\n"));
-                int lowerRing = IntegerAbfragen(1, 16);
-                Console.WriteLine(String.Format("\n\nEnter the number of the upper ring (Minimum {0}, Maximum 13).\n Varify your choice by pressing 'Enter'\n", lowerRing));
-                int upperRing = IntegerAbfragen(lowerRing, 16);
-                
-                // Ticket type wanted:
-                Console.WriteLine(String.Format("\n\nChoose the ticket type by entering the number of the following options:\n -1: Single Fare\n -2: Weekly Ticket\n -3: Monthly Ticket\n"));
-
-                do
+                for (int j = 0; j < numberStudents; j++)
                 {
-                    key = Console.ReadKey(true);
+                    PersonalPriceStu += MvvPriceCalculcator.PersonalPrice(CustomersS[j]);
                 }
-                while (key.KeyChar != '1' && key.KeyChar != '2' && key.KeyChar != '3');
-
-                Console.WriteLine(key.KeyChar);
-
-                TicketType ticketType = TicketType.SingleFare;
-                switch (key.KeyChar)
-                {
-                    case '1':
-                        ticketType = TicketType.SingleFare; 
-                        break;
-                    case '2':
-                        ticketType = TicketType.WeeklyTicket;
-                        break;
-                    case '3':
-                        ticketType = TicketType.MonthlyTicket;
-                        break;
-                }
-
-                // Student or not?
-
-                Console.WriteLine(String.Format("\nIs this person a student?\n -1: Yes\n -2: No\n"));
-
-                do
-                {
-                    key = Console.ReadKey(true);
-                }
-                while (key.KeyChar != '1' && key.KeyChar != '2');
-
-                Console.WriteLine(key.KeyChar);
-                
-                bool isStudent = false;
-                
-                if (key.KeyChar == '1')
-                {
-                    isStudent = true;
-                }
-                
-                // Erstelle Array
-
-                Customers[i] = MvvPriceCalculcator.CreateCustomer(ticketType, lowerRing, upperRing, isStudent);
             }
-
-            // Compute with your Array
-            
-            PersonalPrice = MvvPriceCalculcator.PersonalPrice(Customers);
-
+            if (numberPersons != 0)
+            {
+                for (int k = 0; k < numberPersons; k++)
+                {
+                    PersonalPriceCust += MvvPriceCalculcator.PersonalPrice(Customers[k]);
+                }
+            }
+            PersonalPrice = PersonalPriceCust + PersonalPriceStu;
             //----------------------------------------------------
 
             Console.WriteLine(String.Format("\n###################################################\n" +
